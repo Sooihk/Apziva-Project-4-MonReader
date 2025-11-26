@@ -1,32 +1,71 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
-from loguru import logger
+@dataclass
+class Config:
+    """
+    Global configuration for the MonReader Project
+    Source for:
+    - Paths (data, models, outputs)
+    - Data loading parameters
+    - Optimization hyperparameters
+    - Experiment tagging
+    """
+    # ---------------------------------------------------------------------
+    # Paths
+    # ---------------------------------------------------------------------
+    # repo root
+    root : Path = Path(__file__).resolve().parents[1]
+    # data directory structure
+    dataset_dir: Path = root / 'data'
+    raw_dir: Path = dataset_dir / "raw"
+    train_dir: Path = raw_dir / 'training'
+    test_dir: Path = raw_dir / 'testing'
 
-# Load environment variables from .env file if it exists
-load_dotenv()
+    # Where to save trained models / checkpoints
+    models: Path = root / 'models'
 
-# Paths
-PROJ_ROOT = Path(__file__).resolve().parents[1]
-logger.info(f"PROJ_ROOT path is: {PROJ_ROOT}")
+    # ---------------------------------------------------------------------
+    # Data / dataloader params
+    # ---------------------------------------------------------------------
+    img_size: int = 224
+    batch_size: int = 32
+    num_workers: int = 4
+    pin_memory: bool = True
+    # random seed for reproducibility
+    seed: int = 42
 
-DATA_DIR = PROJ_ROOT / "data"
-RAW_DATA_DIR = DATA_DIR / "raw"
-INTERIM_DATA_DIR = DATA_DIR / "interim"
-PROCESSED_DATA_DIR = DATA_DIR / "processed"
-EXTERNAL_DATA_DIR = DATA_DIR / "external"
+    # ---------------------------------------------------------------------
+    # Optimization hyperparameters
+    # ---------------------------------------------------------------------\
+    # global lr
+    lr: float = 1e-4
+    # discriminative learning rates for fine tuning
+    lr_backbone: float = 2e-5
+    lr_head: float = 1e-4
 
-MODELS_DIR = PROJ_ROOT / "models"
+    weight_decay: float = 1e-4
+    # epochs for the two phases
+    epochs_head: int = 5          # Phase A: linear probe (head only)
+    epochs_fine_tune: int = 10    # Phase B: unfreeze part of backbone
 
-REPORTS_DIR = PROJ_ROOT / "reports"
-FIGURES_DIR = REPORTS_DIR / "figures"
+    # ---------------------------------------------------------------------
+    # Task / experiment metadata
+    # ---------------------------------------------------------------------
+    num_classes: int = 2
 
-# If tqdm is installed, configure loguru with tqdm.write
-# https://github.com/Delgan/loguru/issues/135
-try:
-    from tqdm import tqdm
+    # tag used to name output directories & checkpoint files
+    # e.g. "resnet18_pageflip", "mobilenet_v2_pageflip_kd"
+    tag: str = "resnet18_pageflip"
 
-    logger.remove(0)
-    logger.add(lambda msg: tqdm.write(msg, end=""), colorize=True)
-except ModuleNotFoundError:
-    pass
+    @property
+    def output_dir(self) -> Path:
+        """
+        Directory where checkpoints for this run should be saved.
+
+        Example:
+            models/resnet18_pageflip/checkpoints/
+        """
+        return (self.models_dir / self.tag / "checkpoints").resolve()
