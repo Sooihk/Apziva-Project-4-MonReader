@@ -98,17 +98,17 @@ From the project root:
 `python -m MonReader.experiments.run_all_models`
 
 This script:
-* Trains ResNet18, VGG16, EfficientNet-B0, MobileNetV2, and MobileNetV2-KD
+1. Trains ResNet18, VGG16, EfficientNet-B0, MobileNetV2, and MobileNetV2-KD
 on the training set with validation monitoring.
-* Collects:
-  - the best validation metrics (accuracy/precision/recall/F1, model size),
-  - and per-epoch validation F1 histories for each model.
+2. Collects:
+  * the best validation metrics (accuracy/precision/recall/F1, model size),
+  * and per-epoch validation F1 histories for each model.
 
-* Produces comparison plots:
-  - grouped metric bar charts,
-  - radar (spider) plots,
-  - F1-vs-model-size Pareto plot,
-  - F1-vs-epoch curves.
+3. Produces comparison plots:
+  * grouped metric bar charts,
+  * radar (spider) plots,
+  * F1-vs-model-size Pareto plot,
+  * F1-vs-epoch curves.
 
 Use this when you want to see how all architectures behave on train/validation.
 
