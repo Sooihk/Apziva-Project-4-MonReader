@@ -15,7 +15,6 @@ class Config:
     """
     # ---------------------------------------------------------------------
     # Paths
-    # ---------------------------------------------------------------------
     # repo root
     root : Path = Path(__file__).resolve().parents[1]
     # data directory structure
@@ -25,11 +24,10 @@ class Config:
     test_dir: Path = raw_dir / 'testing'
 
     # Where to save trained models / checkpoints
-    models: Path = root / 'models'
+    models_dir: Path = root / 'models'
 
     # ---------------------------------------------------------------------
     # Data / dataloader params
-    # ---------------------------------------------------------------------
     img_size: int = 224
     batch_size: int = 32
     num_workers: int = 4
@@ -39,7 +37,6 @@ class Config:
 
     # ---------------------------------------------------------------------
     # Optimization hyperparameters
-    # ---------------------------------------------------------------------\
     # global lr
     lr: float = 1e-4
     # discriminative learning rates for fine tuning
@@ -53,12 +50,21 @@ class Config:
 
     # ---------------------------------------------------------------------
     # Task / experiment metadata
-    # ---------------------------------------------------------------------
     num_classes: int = 2
 
     # tag used to name output directories & checkpoint files
     # e.g. "resnet18_pageflip", "mobilenet_v2_pageflip_kd"
     tag: str = "resnet18_pageflip"
+
+    # ---------------------------------------------------------------------
+    # Knowledge distillation hyperparameters
+    # alpha: weight on hard CE vs soft KL (0 => pure KD, 1 => pure CE).
+    kd_alpha: float = 0.7
+    # Softmax temperature for teacher/student in KD loss.
+    kd_temperature: float = 4.0
+    # Tag under which the teacher model's checkpoints are stored.
+    # For ResNet-18 teacher, this would typically be "resnet18_pageflip".
+    kd_teacher_tag: str = "resnet18_pageflip"
 
     @property
     def output_dir(self) -> Path:

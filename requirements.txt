@@ -11,4 +11,10 @@ ruff
 scikit-learn
 tqdm
 typer
+
+torch
+torchvision
+seaborn
+tabulate
+
 -e .
